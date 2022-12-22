@@ -66,18 +66,11 @@ workflows:
     jobs:
       - say-hello
       - setup-environment
+          requires: [say-hello]
       - test-lint
+          requires: [setup-environment]
       - build-docker
+          requires: [test-lint]
       - upload-docker
-
-
-
-
-
-
-
-
-
-
-
+          requires: [build-docker]
 
