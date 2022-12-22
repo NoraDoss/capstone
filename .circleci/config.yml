@@ -20,8 +20,6 @@ jobs:
       - run:
           name: install dependencies (via Makefile)
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
             make install
         
   # test lints
@@ -33,7 +31,6 @@ jobs:
       - run:
           name: make lint
           command: |
-            . venv/bin/activate
             make lint
 
   # build docker image
