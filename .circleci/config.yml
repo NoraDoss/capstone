@@ -11,7 +11,7 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
 
-  # setup environment and install dependencies
+  # setup environment and test lints
   setup-environment:
     docker:
       - image: python:3.7.3-stretch
@@ -21,17 +21,18 @@ jobs:
           name: install dependencies (via Makefile)
           command: |
             make install
-        
-  # test lints
-  test-lint:
-    docker:
-      - image: python:3.7.3-stretch
-    steps:
-      - checkout
-      - run:
-          name: make lint
-          command: |
             make lint
+        
+  # # test lints
+  # test-lint:
+  #   docker:
+  #     - image: python:3.7.3-stretch
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: make lint
+  #         command: |
+  #           make lint
 
   # build docker image
   build-docker:
@@ -55,6 +56,18 @@ jobs:
           command: |
             ./upload_docker.sh
     
+  # deploy docker container to kubernetes
+  deploy-docker:
+    docker:
+      - image: python:3.7.3-stretch
+    steps:
+      - checkout
+      - run:
+          name: deploy docker to k8s
+          command: |
+            brew cask install minikube
+            ./run_kubernetes.sh
+    
 
 
 
@@ -64,10 +77,12 @@ workflows:
       - say-hello
       - setup-environment:
           requires: [say-hello]
-      - test-lint:
-          requires: [setup-environment]
+      # - test-lint:
+      #     requires: [setup-environment]
       - build-docker:
-          requires: [test-lint]
+          requires: [setup-environment]
       - upload-docker:
           requires: [build-docker]
+      - deploy-docker:
+          requires: [upload-docker]
 
