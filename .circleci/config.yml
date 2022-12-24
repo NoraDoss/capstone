@@ -40,9 +40,12 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: build docker
+          name: install dependencies
           command: |
             apk update && apk add bash
+      - run:
+          name: build docker
+          command: |
             ./run_docker.sh
             # ./upload_docker.sh
     
@@ -64,6 +67,7 @@ jobs:
       - image: python:3.7.3-stretch
     steps:
       - checkout
+      - run: yum -y install tar gzip
       - run:
           name: install aws eks
           command: |
