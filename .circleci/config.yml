@@ -44,7 +44,7 @@ jobs:
           name: build docker
           command: |
             apt update
-            sudo snap install docker
+            snap install docker
             # apt install docker.io
             ./run_docker.sh
   
@@ -61,7 +61,7 @@ jobs:
           name: upload docker
           command: |
             apt update
-            sudo snap install docker
+            snap install docker
             # apt install docker.io
             ./upload_docker.sh
     
