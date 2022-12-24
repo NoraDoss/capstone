@@ -96,11 +96,5 @@ workflows:
           requires: [say-hello]
       - build-docker:
           requires: [setup-environment]
-      - deploy-docker:
-          requires: [build-docker]
       - deploy-cluster:
-          requires: [deploy-docker]
-      # - deploy-kubernetes:
-      #     requires: [deploy-docker]
-
-#
+          requires: [build-docker]
