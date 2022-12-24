@@ -49,7 +49,18 @@ jobs:
       - run:
           name: build docker
           command: |
-            ./run_docker.sh
+            # ./run_docker.sh
+            # Step 1:
+            # Build image and add a descriptive tag
+            docker build --tag=mycapstoneproject .
+
+            # Step 2: 
+            # List docker images
+            docker image ls
+
+            # Step 3: 
+            # Run flask app
+            docker run -p 8000:80 mycapstoneproject 
   
   # upload docker to Dockerhub
   upload-docker:
