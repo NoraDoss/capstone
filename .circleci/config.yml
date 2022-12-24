@@ -43,6 +43,7 @@ jobs:
       - run:
           name: build docker
           command: |
+            apt update
             apt install docker.io
             ./run_docker.sh
   
@@ -58,6 +59,7 @@ jobs:
       - run:
           name: upload docker
           command: |
+            apt update
             apt install docker.io
             ./upload_docker.sh
     
