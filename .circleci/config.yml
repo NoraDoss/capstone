@@ -43,7 +43,7 @@ jobs:
       - run:
           name: build docker
           command: |
-            sudo apt install docker.io
+            apt install docker.io
             ./run_docker.sh
   
   # upload docker to Dockerhub
@@ -58,7 +58,7 @@ jobs:
       - run:
           name: upload docker
           command: |
-            sudo apt install docker.io
+            apt install docker.io
             ./upload_docker.sh
     
   # deploy docker container to kubernetes
