@@ -42,10 +42,7 @@ jobs:
       - run:
           name: build docker
           command: |
-            # apt update
-            # apt-get install snapd
-            # snap install docker
-            # # apt install docker.io
+            apk update && apk add bash
             ./run_docker.sh
   
   # upload docker to Dockerhub
@@ -59,10 +56,7 @@ jobs:
       - run:
           name: upload docker
           command: |
-            # apt update
-            # apt-get install snapd
-            # snap install docker
-            # # apt install docker.io
+            apk update && apk add bash
             ./upload_docker.sh
     
   # deploy docker container to kubernetes
