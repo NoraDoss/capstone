@@ -19,10 +19,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install dependencies (via Makefile)
+          name: make setup (via Makefile)
           command: |
             make setup
+      - run:
+          name: make install (via Makefile)
+          command: |
             make install
+      - run:
+          name: make lint (via Makefile)
+          command: |
             make lint
   
         
