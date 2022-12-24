@@ -44,7 +44,7 @@ jobs:
           command: |
             apk update && apk add bash
             ./run_docker.sh
-            ./upload_docker.sh
+            # ./upload_docker.sh
     
   # deploy docker container to kubernetes
   deploy-docker:
