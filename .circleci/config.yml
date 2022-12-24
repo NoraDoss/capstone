@@ -46,20 +46,20 @@ jobs:
             ./run_docker.sh
             # ./upload_docker.sh
     
-  # deploy docker container to kubernetes
-  deploy-docker:
-    docker:
-      - image: python:3.7.3-stretch
-    steps:
-      - checkout
-      - run:
-          name: deploy docker to k8s
-          command: |
-            brew cask install minikube
-            ./run_kubernetes.sh
+  # # deploy docker container to kubernetes
+  # deploy-docker:
+  #   docker:
+  #     - image: python:3.7.3-stretch
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: deploy docker to k8s
+  #         command: |
+  #           brew cask install minikube
+  #           ./run_kubernetes.sh
     
-  # deploy kubernetes to aws eks
-  deploy-kubernetes:
+  # deploy cluster to aws eks
+  deploy-cluster:
     docker:
       - image: python:3.7.3-stretch
     steps:
@@ -72,10 +72,19 @@ jobs:
       - run:
           name: create aws eks cluster
           command: |
-            eksctl create cluster
-            eksctl get cluster
+            eksctl create cluster --name mycapstone-eksctl-cluster --region=us-east-1
+            eksctl utils describe-stacks --region=us-east-1 --cluster=mycapstone-eksctl-cluster
+            eksctl get cluster --name=mycapstone-eksctl-cluster --region=us-east-1
+      - run:
+          name: deploy app
+          command: |
             git clone https://github.com/NoraDoss/capstone.git
             cd capstone
+            ./run_docker.sh
+            kubectl get nodes
+            kubectl create deploy mycapstoneproject --image=noradoss/mycapstoneproject
+            kubectl get deploy,rs,svc,pods
+            kubectl port-forward mycapstoneproject 8000:80
 
 
 
@@ -89,7 +98,9 @@ workflows:
           requires: [setup-environment]
       - deploy-docker:
           requires: [build-docker]
-      - deploy-kubernetes:
+      - deploy-cluster:
           requires: [deploy-docker]
+      # - deploy-kubernetes:
+      #     requires: [deploy-docker]
 
 #
