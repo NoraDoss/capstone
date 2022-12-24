@@ -31,18 +31,6 @@ jobs:
           command: |
             make lint
   
-        
-  # # test lints
-  # test-lint:
-  #   docker:
-  #     - image: python:3.7.3-stretch
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: make lint
-  #         command: |
-  #           make lint
-
   # build docker image
   build-docker:
     docker:
@@ -55,6 +43,7 @@ jobs:
       - run:
           name: build docker
           command: |
+            sudo apt install docker.io
             ./run_docker.sh
   
   # upload docker to Dockerhub
@@ -69,6 +58,7 @@ jobs:
       - run:
           name: upload docker
           command: |
+            sudo apt install docker.io
             ./upload_docker.sh
     
   # deploy docker container to kubernetes
@@ -83,6 +73,24 @@ jobs:
             brew cask install minikube
             ./run_kubernetes.sh
     
+  # deploy kubernetes to aws eks
+  deploy-docker:
+    docker:
+      - image: python:3.7.3-stretch
+    steps:
+      - checkout
+      - run:
+          name: install aws eks
+          command: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+      - run:
+          name: create aws eks cluster
+          command: |
+            eksctl create cluster
+            eksctl get cluster
+            git clone https://github.com/NoraDoss/capstone.git
+            cd capstone
 
 
 
@@ -92,8 +100,6 @@ workflows:
       - say-hello
       - setup-environment:
           requires: [say-hello]
-      # - test-lint:
-      #     requires: [setup-environment]
       - build-docker:
           requires: [setup-environment]
       - upload-docker:
