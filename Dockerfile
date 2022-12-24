@@ -1,5 +1,7 @@
 FROM python:3.7.3-stretch
 
+RUN apt-get update && apt-get install -y docker
+
 ## Step 1:
 # Create a working directory
 WORKDIR /app
