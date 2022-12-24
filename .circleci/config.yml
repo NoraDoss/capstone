@@ -44,19 +44,6 @@ jobs:
           command: |
             apk update && apk add bash
             ./run_docker.sh
-  
-  # upload docker to Dockerhub
-  upload-docker:
-    docker:
-      - image: docker:latest
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: upload docker
-          command: |
-            apk update && apk add bash
             ./upload_docker.sh
     
   # deploy docker container to kubernetes
@@ -100,10 +87,8 @@ workflows:
           requires: [say-hello]
       - build-docker:
           requires: [setup-environment]
-      - upload-docker:
-          requires: [build-docker]
       - deploy-docker:
-          requires: [upload-docker]
+          requires: [build-docker]
       - deploy-kubernetes:
           requires: [deploy-docker]
 
