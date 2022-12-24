@@ -64,7 +64,7 @@ jobs:
   # deploy cluster to aws eks
   deploy-cluster:
     docker:
-      - image: python:3.7.3-stretch
+      - image: amazon/aws-cli:latest
     steps:
       - checkout
       - run: yum -y install tar gzip
