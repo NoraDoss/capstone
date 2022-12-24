@@ -20,8 +20,9 @@ jobs:
       - run:
           name: install dependencies (via Makefile)
           command: |
+            make setup
             make install
-            # make lint
+            make lint
         
   # # test lints
   # test-lint:
