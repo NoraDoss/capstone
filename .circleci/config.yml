@@ -41,6 +41,7 @@ jobs:
   build-docker:
     docker:
       - image: python:3.7.3-stretch
+    working_directory: ~/repo
     steps:
       - checkout
       - setup_remote_docker:
@@ -54,6 +55,7 @@ jobs:
   upload-docker:
     docker:
       - image: python:3.7.3-stretch
+    working_directory: ~/repo
     steps:
       - checkout
       - setup_remote_docker:
