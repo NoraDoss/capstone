@@ -34,10 +34,11 @@ jobs:
   # build docker image
   build-docker:
     docker:
-      - image: python:3.7.3-stretch
+      - image: docker:latest
     working_directory: ~/repo
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: build docker
           command: |
@@ -50,10 +51,11 @@ jobs:
   # upload docker to Dockerhub
   upload-docker:
     docker:
-      - image: python:3.7.3-stretch
+      - image: docker:latest
     working_directory: ~/repo
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: upload docker
           command: |
