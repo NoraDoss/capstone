@@ -44,7 +44,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.7
       - run:
           name: build docker
           command: |
@@ -57,7 +57,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.7
       - run:
           name: upload docker
           command: |
