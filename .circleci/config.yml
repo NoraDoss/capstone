@@ -44,7 +44,7 @@ jobs:
           command: |
             apk update && apk add bash
       - run:
-          name: build docker
+          name: build docker (via Dockerfile)
           command: |
             ./run_docker.sh
             # ./upload_docker.sh
@@ -71,8 +71,14 @@ jobs:
       - run:
           name: install aws eks
           command: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar -xvf -C /tmp
             sudo mv /tmp/eksctl /usr/local/bin
+      - run:
+          name: install kubectl
+          command: |
+            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
       - run:
           name: create aws eks cluster
           command: |
