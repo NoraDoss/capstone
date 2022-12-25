@@ -115,7 +115,7 @@ jobs:
   #                 mode: +x     
 
 
-  deploy cluster to aws eks
+  # deploy cluster to aws eks
   deploy-cluster:
     docker:
       - image: amazon/aws-cli:latest
