@@ -1,5 +1,20 @@
 version: 2.1
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 jobs:
   # say-hello
   say-hello:
@@ -61,40 +76,79 @@ jobs:
   #           brew cask install minikube
   #           ./run_kubernetes.sh
     
+
+
+
   # deploy cluster to aws eks
   deploy-cluster:
     docker:
       - image: amazon/aws-cli:latest
     steps:
       - checkout
-      - run: yum -y install tar gzip
-      - run:
-          name: install aws eks
-          command: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar -xvf -C/tmp
-            sudo mv /tmp/eksctl /usr/local/bin
-      - run:
-          name: install kubectl
-          command: |
-            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            sudo mv ./kubectl /usr/local/bin/kubectl
-      - run:
-          name: create aws eks cluster
-          command: |
-            eksctl create cluster --name mycapstone-eksctl-cluster --region=us-east-1
-            eksctl utils describe-stacks --region=us-east-1 --cluster=mycapstone-eksctl-cluster
-            eksctl get cluster --name=mycapstone-eksctl-cluster --region=us-east-1
-      - run:
-          name: deploy app
-          command: |
-            git clone https://github.com/NoraDoss/capstone.git
-            cd capstone
-            ./run_docker.sh
-            kubectl get nodes
-            kubectl create deploy mycapstoneproject --image=noradoss/mycapstoneproject
-            kubectl get deploy,rs,svc,pods
-            kubectl port-forward mycapstoneproject 8000:80
+      - hosts: eks.us-east-1.amazonaws.com
+        connection: local
+        vars:
+          download_dir: "{{ lookup('env', 'HOME') }}"
+          kubernetes_version: "1.14"
+        become: yes
+        tasks:
+          # Ensure aws cli is installed and configured on local before running these plays
+          - name: Get list of installed binaries
+            command: ls /usr/local/bin
+            register: local_binaries
+          - name: Install eksctl
+            block:
+              - name: Download eksctl
+                get_url:
+                  url: "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz"
+                  dest: "{{ download_dir }}/eksctl_download.tgz"
+              - name: Expand eksctl
+                unarchive:
+                  src: "{{ download_dir }}/eksctl_download.tgz"
+                  dest: "{{ download_dir }}"
+                  remote_src: yes
+              - name: Move eksctl to /usr/local/bin
+                command: mv {{ download_dir }}/eksctl /usr/local/bin
+              - name: Give users permission to execute eksctl
+                file:
+                  path: /usr/local/bin/eksctl
+                  mode: +x     
+
+
+  # deploy cluster to aws eks
+  # deploy-cluster:
+  #   docker:
+  #     - image: amazon/aws-cli:latest
+  #   steps:
+  #     - checkout
+  #     - run: yum -y install tar gzip
+  #     - run:
+  #         name: install aws eks
+  #         command: |
+  #           curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar -xvf -C/tmp
+  #           sudo mv /tmp/eksctl /usr/local/bin
+  #     - run:
+  #         name: install kubectl
+  #         command: |
+  #           curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+  #           chmod +x ./kubectl
+  #           sudo mv ./kubectl /usr/local/bin/kubectl
+  #     - run:
+  #         name: create aws eks cluster
+  #         command: |
+  #           eksctl create cluster --name mycapstone-eksctl-cluster --region=us-east-1
+  #           eksctl utils describe-stacks --region=us-east-1 --cluster=mycapstone-eksctl-cluster
+  #           eksctl get cluster --name=mycapstone-eksctl-cluster --region=us-east-1
+  #     - run:
+  #         name: deploy app
+  #         command: |
+  #           git clone https://github.com/NoraDoss/capstone.git
+  #           cd capstone
+  #           ./run_docker.sh
+  #           kubectl get nodes
+  #           kubectl create deploy mycapstoneproject --image=noradoss/mycapstoneproject
+  #           kubectl get deploy,rs,svc,pods
+  #           kubectl port-forward mycapstoneproject 8000:80
 
 
 
