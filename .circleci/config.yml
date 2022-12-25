@@ -1,19 +1,8 @@
 version: 2.1
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+orbs:
+  aws-eks: circleci/aws-eks@2.2.0
+  kubernetes: circleci/kubernetes@1.3
 
 jobs:
   # say-hello
@@ -78,43 +67,6 @@ jobs:
     
 
 
-
-  # # deploy cluster to aws eks
-  # deploy-cluster:
-  #   docker:
-  #     - image: amazon/aws-cli:latest
-  #   steps:
-  #     - checkout
-  #     - hosts: eks.us-east-1.amazonaws.com
-  #       connection: local
-  #       vars:
-  #         download_dir: "{{ lookup('env', 'HOME') }}"
-  #         kubernetes_version: "1.14"
-  #       become: yes
-  #       tasks:
-  #         # Ensure aws cli is installed and configured on local before running these plays
-  #         - name: Get list of installed binaries
-  #           command: ls /usr/local/bin
-  #           register: local_binaries
-  #         - name: Install eksctl
-  #           block:
-  #             - name: Download eksctl
-  #               get_url:
-  #                 url: "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz"
-  #                 dest: "{{ download_dir }}/eksctl_download.tgz"
-  #             - name: Expand eksctl
-  #               unarchive:
-  #                 src: "{{ download_dir }}/eksctl_download.tgz"
-  #                 dest: "{{ download_dir }}"
-  #                 remote_src: yes
-  #             - name: Move eksctl to /usr/local/bin
-  #               command: mv {{ download_dir }}/eksctl /usr/local/bin
-  #             - name: Give users permission to execute eksctl
-  #               file:
-  #                 path: /usr/local/bin/eksctl
-  #                 mode: +x     
-
-
   # deploy cluster to aws eks
   deploy-cluster:
     docker:
@@ -123,18 +75,20 @@ jobs:
       - checkout
       # - run: yum -y install tar gzip
       - run: apk add --update tar gzip nodejs npm curl 
+      - run: pip install awscli
+      - run: aws --version
       - run:
           name: install aws eks
           command: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar -xvf -C /tmp
-            sudo mv /tmp/eksctl /usr/local/bin
+            # curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar -xvf -C /tmp
+            # sudo mv /tmp/eksctl /usr/local/bin
             eksctl --version
       - run:
           name: install kubectl
           command: |
-            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            sudo mv ./kubectl /usr/local/bin/kubectl
+            # curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            # chmod +x ./kubectl
+            # sudo mv ./kubectl /usr/local/bin/kubectl
             kubectl version
       - run:
           name: create aws eks cluster
