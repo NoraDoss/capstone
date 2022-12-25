@@ -117,5 +117,7 @@ workflows:
           requires: [say-hello]
       - build-docker:
           requires: [setup-environment]
-      - deploy-cluster:
-          requires: [build-docker]
+      - aws-eks/create-cluster:
+          cluster-name: my-first-cluster
+      # - deploy-cluster:
+      #     requires: [build-docker]
